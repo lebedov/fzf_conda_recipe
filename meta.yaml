@@ -1,0 +1,38 @@
+{% set name = 'fzf' %}
+{% set build = 0 %}
+{% set version = '0.17.5' %}
+{% set pkg_src = 'src/github.com/junegunn/fzf' %}
+
+package:
+    name: {{name}}
+    version: {{version}}
+
+about:
+    home: https://github.com/junegunn/fzf
+    license: MIT
+    summary: a command-line fuzzy finder
+
+source:
+    folder: {{pkg_src}}
+    url: https://github.com/junegunn/{{name}}/archive/{{version}}.tar.gz
+    md5: b44b96f45efb26fca1d740917d18db6a 
+
+requirements:
+    build:
+        - {{ compiler('go') }}
+
+build:
+    number: {{build}}
+    script:
+        - pushd {{pkg_src}}
+        - go get -d ./...
+        - go install
+        - go test github.com/junegunn/fzf/src github.com/junegunn/fzf/src/algo github.com/junegunn/fzf/src/tui github.com/junegunn/fzf/src/util
+        - install -d -m 755 $PREFIX/bin
+        - install -d -m 755 $PREFIX/share/man/man1
+        - install -d -m 755 $PREFIX/share/vim/fzf/plugin
+        - install -d -m 755 $PREFIX/share/vim/fzf/doc
+        - install -m 755 bin/fzf-tmux $PREFIX/bin 
+        - install -m 644 man/man1/* $PREFIX/share/man/man1
+        - install -m 644 plugin/fzf.vim $PREFIX/share/vim/fzf/plugin
+        - install -m 644 doc/fzf.txt $PREFIX/share/vim/fzf/doc
